@@ -11,23 +11,24 @@ def mean_confidence_interval(data, confidence=0.95):
     return m, m - h, m + h
 
 
-def plot_nmi_scores(iterations, nmi_scores, mean, low, high, filename):
+def plot_scores(scores, mean, low, high, filename):
     # Plotting
+    iterations = range(1, len(scores) + 1)
     plt.figure(figsize=(10, 6))
-    plt.plot(iterations, nmi_scores, label="NMI Score per Iteration")
+    plt.plot(iterations, scores, label="Score per Iteration")
     plt.axhline(
         y=mean,
         color="r",
         linestyle="-",
-        label=f"Mean NMI Score = {mean:.3f}",
+        label=f"Mean Score = {mean:.3f}",
     )
     plt.fill_between(
         iterations, low, high, color="gray", alpha=0.2, label="95% Confidence Interval"
     )
     plt.xlabel("Bootstrap Iteration")
-    plt.ylabel("NMI Score")
-    plt.title("NMI Scores with Confidence Interval Over Iterations")
+    plt.ylabel("Score")
+    plt.title(f'Scores Over Iterations for {filename.split("_")[0].upper()}')
     plt.legend()
 
     plt.savefig(filename)
-    plt.plot()
+    plt.close()

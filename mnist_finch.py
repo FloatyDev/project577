@@ -4,8 +4,14 @@ import h5py
 from sklearn.datasets import fetch_openml
 from finch import FINCH
 from sklearn.metrics import normalized_mutual_info_score as nmi_score
+from sklearn.metrics import (
+    silhouette_score,
+    davies_bouldin_score,
+    calinski_harabasz_score,
+    adjusted_rand_score,
+)
 from sklearn.utils import resample
-from utils.util import mean_confidence_interval, plot_nmi_scores
+from utils.util import mean_confidence_interval, plot_scores
 
 # Load Raw MNIST dataset
 # --------------------------------------------------
@@ -40,13 +46,15 @@ print(f"ground_truth, shape : {ground_truth_cnn}")
 # Apply FINCH clustering
 # --------------------------------------------------
 print("FINCH clustering results for MNIST (automatic clustering):")
-# Apply FINCH clustering
-# CNN features
-nmi_raw_scores = []
-nmi_cnn_scores = []
+nmi_raw_scores, nmi_cnn_scores = [], []
+nmi_raw_scores, nmi_cnn_scores = [], []
+silhouette_raw_scores, silhouette_cnn_scores = [], []
+davies_bouldin_raw_scores, davies_bouldin_cnn_scores = [], []
+calinski_harabasz_raw_scores, calinski_harabasz_cnn_scores = [], []
+adjusted_rand_raw_scores, adjusted_rand_cnn_scores = [], []
 number_of_bootstrap_samples = 20
 
-# Bootstrapping to identify true accuracy
+# Bootstrapping to identify more precise metrics
 for _ in range(number_of_bootstrap_samples):
     random_seed = np.random.randint(0, 1000)
 
@@ -67,19 +75,155 @@ for _ in range(number_of_bootstrap_samples):
     # Calculate NMI score
     nmi_raw = nmi_score(y_raw_resampled, req_c)
     nmi_cnn = nmi_score(y_cnn_resampled, req_c_cnn)
+    # Calculate Silhouette Score
+    silhouette_raw = silhouette_score(X_raw_resampled, req_c)
+    silhouette_cnn = silhouette_score(X_cnn_resampled, req_c_cnn)
+
+    # Calculate Davies-Bouldin Score
+    davies_bouldin_raw = davies_bouldin_score(X_raw_resampled, req_c)
+    davies_bouldin_cnn = davies_bouldin_score(X_cnn_resampled, req_c_cnn)
+
+    # Calculate Calinski-Harabasz Index
+    calinski_harabasz_raw = calinski_harabasz_score(X_raw_resampled, req_c)
+    calinski_harabasz_cnn = calinski_harabasz_score(X_cnn_resampled, req_c_cnn)
+
+    # Calculate Adjusted Rand Index
+    adjusted_rand_raw = adjusted_rand_score(y_raw_resampled, req_c)
+    adjusted_rand_cnn = adjusted_rand_score(y_cnn_resampled, req_c_cnn)
+
     nmi_raw_scores.append(nmi_raw)
     nmi_cnn_scores.append(nmi_cnn)
-
+    silhouette_raw_scores.append(silhouette_raw)
+    silhouette_cnn_scores.append(silhouette_cnn)
+    davies_bouldin_raw_scores.append(davies_bouldin_raw)
+    davies_bouldin_cnn_scores.append(davies_bouldin_cnn)
+    calinski_harabasz_raw_scores.append(calinski_harabasz_raw)
+    calinski_harabasz_cnn_scores.append(calinski_harabasz_cnn)
+    adjusted_rand_raw_scores.append(adjusted_rand_raw)
+    adjusted_rand_cnn_scores.append(adjusted_rand_cnn)
 # Calculate CI
 ci, low, high = mean_confidence_interval(nmi_raw_scores)
 ci_cnn, low_cnn, high_cnn = mean_confidence_interval(nmi_cnn_scores)
 
+# Silhouette Scores
+ci_silhouette_raw, low_silhouette_raw, high_silhouette_raw = mean_confidence_interval(
+    silhouette_raw_scores
+)
+ci_silhouette_cnn, low_silhouette_cnn, high_silhouette_cnn = mean_confidence_interval(
+    silhouette_cnn_scores
+)
 
-# Calculate mean and variance
-iterations = range(1, len(nmi_raw_scores) + 1)
+# Davies-Bouldin Scores
+(
+    ci_davies_bouldin_raw,
+    low_davies_bouldin_raw,
+    high_davies_bouldin_raw,
+) = mean_confidence_interval(davies_bouldin_raw_scores)
+(
+    ci_davies_bouldin_cnn,
+    low_davies_bouldin_cnn,
+    high_davies_bouldin_cnn,
+) = mean_confidence_interval(davies_bouldin_cnn_scores)
+
+# Calinski-Harabasz Scores
+(
+    ci_calinski_harabasz_raw,
+    low_calinski_harabasz_raw,
+    high_calinski_harabasz_raw,
+) = mean_confidence_interval(calinski_harabasz_raw_scores)
+(
+    ci_calinski_harabasz_cnn,
+    low_calinski_harabasz_cnn,
+    high_calinski_harabasz_cnn,
+) = mean_confidence_interval(calinski_harabasz_cnn_scores)
+
+# Adjusted Rand Index Scores
+(
+    ci_adjusted_rand_raw,
+    low_adjusted_rand_raw,
+    high_adjusted_rand_raw,
+) = mean_confidence_interval(adjusted_rand_raw_scores)
+(
+    ci_adjusted_rand_cnn,
+    low_adjusted_rand_cnn,
+    high_adjusted_rand_cnn,
+) = mean_confidence_interval(adjusted_rand_cnn_scores)
+
 
 mean_nmi_raw = float(np.mean(nmi_raw_scores))
-plot_nmi_scores(iterations, nmi_raw_scores, mean_nmi_raw, low, high)
+plot_scores(nmi_raw_scores, mean_nmi_raw, low, high, "raw_nmi.png")
 
 mean_nmi_cnn = float(np.mean(nmi_cnn_scores))
-plot_nmi_scores(iterations, nmi_cnn_scores, mean_nmi_cnn, low_cnn, high_cnn)
+plot_scores(nmi_cnn_scores, mean_nmi_cnn, low_cnn, high_cnn, "cnn_nmi.png")
+
+# Silhouette Scores
+mean_silhouette_raw = float(np.mean(silhouette_raw_scores))
+plot_scores(
+    silhouette_raw_scores,
+    mean_silhouette_raw,
+    low_silhouette_raw,
+    high_silhouette_raw,
+    "raw_silhouette.png",
+)
+mean_silhouette_cnn = float(np.mean(silhouette_cnn_scores))
+plot_scores(
+    silhouette_cnn_scores,
+    mean_silhouette_cnn,
+    low_silhouette_cnn,
+    high_silhouette_cnn,
+    "cnn_silhouette.png",
+)
+
+# Davies-Bouldin Scores
+mean_davies_bouldin_raw = float(np.mean(davies_bouldin_raw_scores))
+plot_scores(
+    davies_bouldin_raw_scores,
+    mean_davies_bouldin_raw,
+    low_davies_bouldin_raw,
+    high_davies_bouldin_raw,
+    "raw_davies_bouldin.png",
+)
+mean_davies_bouldin_cnn = float(np.mean(davies_bouldin_cnn_scores))
+plot_scores(
+    davies_bouldin_cnn_scores,
+    mean_davies_bouldin_cnn,
+    low_davies_bouldin_cnn,
+    high_davies_bouldin_cnn,
+    "cnn_davies_bouldin.png",
+)
+
+# Calinski-Harabasz Scores
+mean_calinski_harabasz_raw = float(np.mean(calinski_harabasz_raw_scores))
+plot_scores(
+    calinski_harabasz_raw_scores,
+    mean_calinski_harabasz_raw,
+    low_calinski_harabasz_raw,
+    high_calinski_harabasz_raw,
+    "raw_calinski_harabasz.png",
+)
+mean_calinski_harabasz_cnn = float(np.mean(calinski_harabasz_cnn_scores))
+plot_scores(
+    calinski_harabasz_cnn_scores,
+    mean_calinski_harabasz_cnn,
+    low_calinski_harabasz_cnn,
+    high_calinski_harabasz_cnn,
+    "cnn_calinski_harabasz.png",
+)
+
+# Adjusted Rand Index Scores
+mean_adjusted_rand_raw = float(np.mean(adjusted_rand_raw_scores))
+plot_scores(
+    adjusted_rand_raw_scores,
+    mean_adjusted_rand_raw,
+    low_adjusted_rand_raw,
+    high_adjusted_rand_raw,
+    "raw_adjusted_rand.png",
+)
+mean_adjusted_rand_cnn = float(np.mean(adjusted_rand_cnn_scores))
+plot_scores(
+    adjusted_rand_cnn_scores,
+    mean_adjusted_rand_cnn,
+    low_adjusted_rand_cnn,
+    high_adjusted_rand_cnn,
+    "cnn_adjusted_rand.png",
+)
