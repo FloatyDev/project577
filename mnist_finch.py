@@ -46,6 +46,7 @@ nmi_raw_scores = []
 nmi_cnn_scores = []
 number_of_bootstrap_samples = 20
 
+# Bootstrapping to identify true accuracy
 for _ in range(number_of_bootstrap_samples):
     random_seed = np.random.randint(0, 1000)
 
