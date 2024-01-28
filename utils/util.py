@@ -3,6 +3,45 @@ import scipy.stats
 import matplotlib.pyplot as plt
 import cv2
 import os
+import requests
+from tqdm import tqdm
+
+
+def download_weights(file_path, url):
+    """
+    Download the file from the specified URL if it doesn't exist, with a progress bar.
+
+    Args:
+    file_path (str): The path where the file should be saved.
+    url (str): The URL to download the file from.
+    """
+    # Check if the file already exists
+    if not os.path.exists(file_path):
+        print(f"Downloading weights to {file_path}...")
+
+        # Send a HTTP request to the server
+        response = requests.get(url, stream=True)
+        response.raise_for_status()  # Ensure the request was successful
+
+        total_size_in_bytes = int(response.headers.get("content-length", 0))
+        chunk_size = 1024  # 1 Kilobyte
+
+        progress_bar = tqdm(total=total_size_in_bytes, unit="iB", unit_scale=True)
+
+        # Write the file to the specified path in chunks
+        with open(file_path, "wb") as file:
+            for data in response.iter_content(chunk_size):
+                progress_bar.update(len(data))
+                file.write(data)
+
+        progress_bar.close()
+
+        if total_size_in_bytes != 0 and progress_bar.n != total_size_in_bytes:
+            print("ERROR, something went wrong")
+        else:
+            print("Download complete.")
+    else:
+        print("Weights file already exists.")
 
 
 def mean_confidence_interval(data, confidence=0.95):
