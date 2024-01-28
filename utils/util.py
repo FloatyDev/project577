@@ -8,6 +8,29 @@ from tqdm import tqdm
 import shutil
 
 
+def calculate_hog_features(mask):
+    # Initialize the HOG descriptor
+    mask = mask.astype(np.uint8) * 255
+
+    winSize = (
+        mask.shape[1] // 8 * 8,
+        mask.shape[0] // 8 * 8,
+    )  # Ensure divisibility by 8
+    blockSize = (16, 16)
+    blockStride = (8, 8)
+    cellSize = (8, 8)
+    nbins = 9
+    hog = cv2.HOGDescriptor(winSize, blockSize, blockStride, cellSize, nbins)
+
+    # Compute HOG features
+    hog_features = hog.compute(mask)
+
+    # Reshape to 1D array
+    hog_features = np.array(hog_features).flatten()
+
+    return hog_features
+
+
 def prepare_folder(folder_path):
     """
     Prepare a folder by wiping its contents if it exists, or creating it if it does not.
@@ -158,11 +181,6 @@ def display_cluster_masks_id(clustered_masks, cluster_id):
     for i in range(num_masks, rows * cols):
         axs[i].axis("off")
     # Ensure the directory exists
-
-    output_dir = "./sam_finch_results"
-    if not os.path.exists(output_dir):
-        print(f"making output dir {output_dir}")
-        os.makedirs(output_dir)
 
     plt.savefig(f"./sam_finch_results/cluster_{cluster_id}.png")
     plt.close()
