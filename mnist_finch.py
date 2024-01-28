@@ -28,7 +28,7 @@ y = labels[:10000]
 f_cnndata = h5py.File("./data/mnist10k/data.mat", "r")
 cnn_data = f_cnndata.get("data")
 
-# Have to transpose because Matlab is column-major and Python is row-major
+# Have to transpose because get function transposes matlab matrix
 cnn_data = np.array(cnn_data).T
 
 # Load labels
