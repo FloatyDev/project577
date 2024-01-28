@@ -7,7 +7,12 @@ import sys
 import matplotlib.pyplot as plt
 from finch import FINCH
 from sklearn.metrics import normalized_mutual_info_score as nmi_score
-from utils.util import display_cluster_masks, calculate_hu_moments, show_anns
+from utils.util import (
+    display_cluster_masks,
+    calculate_hu_moments,
+    download_weights,
+    show_anns,
+)
 
 sys.path.append("..")
 from segment_anything import sam_model_registry, SamPredictor, SamAutomaticMaskGenerator
@@ -20,6 +25,10 @@ def main():
 
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     # Preparing SAM model
+    download_weights(
+        "./sam_weights/sam_vit_h_4b8939.pth",
+        "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth",
+    )
     sam_checkpoint = "./sam_weights/sam_vit_h_4b8939.pth"
 
     model_type = "vit_h"
