@@ -5,6 +5,24 @@ import cv2
 import os
 import requests
 from tqdm import tqdm
+import shutil
+
+
+def prepare_folder(folder_path):
+    """
+    Prepare a folder by wiping its contents if it exists, or creating it if it does not.
+
+    Args:
+    folder_path (str): The path to the folder.
+    """
+    # Check if the folder exists
+    if os.path.exists(folder_path):
+        # Wipe the folder contents
+        shutil.rmtree(folder_path)
+
+    # Create the folder
+    os.makedirs(folder_path, exist_ok=True)
+    print(f"Folder '{folder_path}' is ready.")
 
 
 def download_weights(file_path, url):
@@ -152,3 +170,4 @@ def show_anns(anns):
         color_mask = np.concatenate([np.random.random(3), [0.35]])
         img[m] = color_mask
     ax.imshow(img)
+

@@ -12,6 +12,7 @@ from utils.util import (
     calculate_hu_moments,
     download_weights,
     show_anns,
+    prepare_folder,
 )
 
 sys.path.append("..")
@@ -29,6 +30,7 @@ def main():
         "./sam_weights/sam_vit_h_4b8939.pth",
         "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth",
     )
+    prepare_folder("./masks/")
     sam_checkpoint = "./sam_weights/sam_vit_h_4b8939.pth"
 
     model_type = "vit_h"
