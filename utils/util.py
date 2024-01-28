@@ -63,6 +63,16 @@ def download_weights(file_path, url):
 
 
 def mean_confidence_interval(data, confidence=0.95):
+    """
+    Calculate the mean and the confidence interval of the given data.
+
+    Args:
+    data (list or array-like): The dataset for which the mean and confidence interval are to be calculated.
+    confidence (float): The confidence level for the interval. Default is 0.95 for a 95% confidence interval.
+
+    Returns:
+    tuple: A tuple containing the mean, lower bound of the confidence interval, and upper bound of the confidence interval.
+    """
     a = 1.0 * np.array(data)
     n = len(a)
     m, se = np.mean(a), scipy.stats.sem(a)
@@ -71,16 +81,21 @@ def mean_confidence_interval(data, confidence=0.95):
 
 
 def plot_scores(scores, mean, low, high, filename):
-    # Plotting
+    """
+    Plot the scores over iterations with a confidence interval and save the plot to a file.
+
+    Args:
+    scores (list or array-like): The scores to be plotted.
+    mean (float): The mean score.
+    low (float): The lower bound of the confidence interval.
+    high (float): The upper bound of the confidence interval.
+    filename (str): The filename where the plot will be saved.
+
+    """
     iterations = range(1, len(scores) + 1)
     plt.figure(figsize=(10, 6))
     plt.plot(iterations, scores, label="Score per Iteration")
-    plt.axhline(
-        y=mean,
-        color="r",
-        linestyle="-",
-        label=f"Mean Score = {mean:.3f}",
-    )
+    plt.axhline(y=mean, color="r", linestyle="-", label=f"Mean Score = {mean:.3f}")
     plt.fill_between(
         iterations, low, high, color="gray", alpha=0.2, label="95% Confidence Interval"
     )
@@ -94,6 +109,15 @@ def plot_scores(scores, mean, low, high, filename):
 
 
 def display_cluster_masks(masks, clusters, partition_id):
+    """
+    Display and print information about the clustered masks for a given partition.
+
+    Args:
+    masks (list of dict): A list where each element is a dictionary containing the 'segmentation' key with mask data.
+    clusters (numpy.ndarray): An array of cluster labels, where each row corresponds to a mask and columns to partitions.
+    partition_id (int): The specific partition to consider for displaying the clusters.
+
+    """
     unique_clusters = np.unique(clusters[:, partition_id])
     print(f"There are {len(unique_clusters)} unique clusters")
 
@@ -110,11 +134,19 @@ def display_cluster_masks(masks, clusters, partition_id):
 
 
 def display_cluster_masks_id(clustered_masks, cluster_id):
+    """
+    Display and save the clustered masks for a given cluster ID.
+
+    Args:
+    clustered_masks (list of numpy arrays): A list of mask arrays belonging to the same cluster.
+    cluster_id (int): The ID of the cluster these masks belong to.
+
+    """
     num_masks = len(clustered_masks)
     cols = min(num_masks, 4)  # Display up to 4 masks per row
     rows = num_masks // cols + (num_masks % cols > 0)
 
-    fig, axs = plt.subplots(rows, cols, figsize=(cols * 4, rows * 4))
+    _, axs = plt.subplots(rows, cols, figsize=(cols * 4, rows * 4))
     axs = axs.ravel() if num_masks > 1 else [axs]
 
     for i, mask in enumerate(clustered_masks):
@@ -137,6 +169,19 @@ def display_cluster_masks_id(clustered_masks, cluster_id):
 
 
 def calculate_hu_moments(mask):
+    """
+    Calculate the Hu Moments for a given mask.
+
+    Args:
+    mask (numpy array): The mask for which to calculate the Hu Moments.
+
+    Returns:
+    numpy array: A 1D array of the 7 Hu Moments for the mask.
+
+    Description:
+    This function calculates the Hu Moments, which are shape descriptors invariant to translation, scale, and rotation.
+    The function also applies a logarithmic transformation to these moments for normalization purposes.
+    """
     # Convert the boolean mask to uint8
     mask = mask.astype(np.uint8) * 255
 
@@ -150,6 +195,17 @@ def calculate_hu_moments(mask):
 
 # Function for annotations
 def show_anns(anns):
+    """
+    Display annotations on an image.
+
+    Args:
+    anns (list of dictionaries): A list of annotations, where each annotation is a dictionary containing the 'segmentation'
+    key with mask data and the 'area' key with the area of the mask.
+
+    Description:
+    This function sorts the annotations by area and displays them overlaid on a blank image. Each annotation is shown
+    in a different color. The annotations are sorted so that larger annotations are displayed first.
+    """
     if len(anns) == 0:
         return
 
@@ -170,4 +226,3 @@ def show_anns(anns):
         color_mask = np.concatenate([np.random.random(3), [0.35]])
         img[m] = color_mask
     ax.imshow(img)
-
