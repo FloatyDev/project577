@@ -38,21 +38,23 @@ def main():
 
     mask_generator = SamAutomaticMaskGenerator(sam, pred_iou_thresh=0.94)
     masks = mask_generator.generate(image=image)
-    hu_moments_list = []
+    feature_list = []
     for i, mask in enumerate(masks):
         mask_image = (mask["segmentation"] * 255).astype(
             np.uint8
         )  # Convert to uint8 format
-        hu_moments_list.append(calculate_hu_moments(mask["segmentation"]))
         cv2.imwrite(f"./masks/mask_{i}.png", mask_image)
 
+    # Calculate mask features
+    feature_list = [calculate_hu_moments(mask["segmentation"]) for mask in masks]
+
     # Stack the Hu Moments vectors into a matrix
-    print(f"length of hu_moments_list: {len(hu_moments_list)}")
-    hu_moments_matrix = np.vstack(hu_moments_list)
+    print(f"length of hu_moments_list: {len(feature_list)}")
+    feature_matrix = np.vstack(feature_list)
 
-    print(f"shape of matrix: {hu_moments_matrix.shape}")
+    print(f"shape of matrix: {feature_matrix.shape}")
 
-    clusters, num_clust, _ = FINCH(hu_moments_matrix, verbose=True)
+    clusters, num_clust, _ = FINCH(feature_matrix, distance="cosine", verbose=True)
     print(f"Clusters per partition: {num_clust}")
 
     # save segmented image
