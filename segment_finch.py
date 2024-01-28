@@ -64,8 +64,8 @@ def main():
     elif args.algo == "hu":
         feature_list = [calculate_hu_moments(mask["segmentation"]) for mask in masks]
 
-    # Stack the Hu Moments vectors into a matrix
     print(f"length of feature list: {len(feature_list)}")
+    # Stack list of feature vectors into a matrix
     feature_matrix = np.vstack(feature_list)
 
     print(f"shape of feature matrix: {feature_matrix.shape}")
