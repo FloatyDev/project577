@@ -1,12 +1,10 @@
 import cv2
 import numpy as np
 import numpy as np
-import torch
 import cv2
 import sys
 import matplotlib.pyplot as plt
 from finch import FINCH
-from sklearn.metrics import normalized_mutual_info_score as nmi_score
 from utils.util import (
     display_cluster_masks,
     calculate_hu_moments,
@@ -16,7 +14,7 @@ from utils.util import (
 )
 
 sys.path.append("..")
-from segment_anything import sam_model_registry, SamPredictor, SamAutomaticMaskGenerator
+from segment_anything import sam_model_registry, SamAutomaticMaskGenerator
 
 
 def main():
