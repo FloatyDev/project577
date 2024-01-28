@@ -9,6 +9,16 @@ import shutil
 
 
 def calculate_hog_features(mask):
+    """
+    Calculate the Histogram of Oriented Gradients (HOG) features for a given mask.
+
+    Args:
+    mask (numpy.ndarray): The mask for which to calculate the HOG features. The mask should be a 2D array.
+
+    Returns:
+    numpy.ndarray: A 1D array of the HOG features for the mask.
+    Note: The mask is assumed to be a grayscale image where the object of interest is represented by non-zero values.
+    """
     # Initialize the HOG descriptor
     mask = mask.astype(np.uint8) * 255
 
