@@ -29,7 +29,7 @@ def main():
     )
     args = parser.parse_args()
 
-    image = cv2.imread("./images/truck.jpg")
+    image = cv2.imread("./images/bottles.jpg")
 
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     # Preparing SAM model
@@ -47,7 +47,7 @@ def main():
     sam.to(device=0)  # tried 0 better than default
 
     mask_generator = SamAutomaticMaskGenerator(
-        sam, pred_iou_thresh=0.94, min_mask_region_area=10
+        sam, pred_iou_thresh=0.96, min_mask_region_area=10
     )
     masks = mask_generator.generate(image=image)
     feature_list = []
@@ -83,7 +83,7 @@ def main():
     plt.savefig("sam.png")
 
     # display clustered masks at maximum granularity
-    display_cluster_masks(masks, clusters, -1)
+    display_cluster_masks(masks, clusters, 0)
 
 
 if __name__ == "__main__":
