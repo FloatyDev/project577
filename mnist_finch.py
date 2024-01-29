@@ -52,7 +52,7 @@ silhouette_raw_scores, silhouette_cnn_scores = [], []
 davies_bouldin_raw_scores, davies_bouldin_cnn_scores = [], []
 calinski_harabasz_raw_scores, calinski_harabasz_cnn_scores = [], []
 adjusted_rand_raw_scores, adjusted_rand_cnn_scores = [], []
-number_of_bootstrap_samples = 20
+number_of_bootstrap_samples = 150
 
 # Bootstrapping to identify more precise metrics
 for _ in range(number_of_bootstrap_samples):
@@ -74,6 +74,7 @@ for _ in range(number_of_bootstrap_samples):
     )
     # Calculate NMI score
     nmi_raw = nmi_score(y_raw_resampled, req_c)
+    print(np.array(req_c).shape)
     nmi_cnn = nmi_score(y_cnn_resampled, req_c_cnn)
     # Calculate Silhouette Score
     silhouette_raw = silhouette_score(X_raw_resampled, req_c)
@@ -151,10 +152,12 @@ ci_silhouette_cnn, low_silhouette_cnn, high_silhouette_cnn = mean_confidence_int
 
 
 mean_nmi_raw = float(np.mean(nmi_raw_scores))
-plot_scores(nmi_raw_scores, mean_nmi_raw, low, high, "raw_nmi.png")
+plot_scores(nmi_raw_scores, mean_nmi_raw, low, high, "./mnist_results/raw/raw_nmi.png")
 
 mean_nmi_cnn = float(np.mean(nmi_cnn_scores))
-plot_scores(nmi_cnn_scores, mean_nmi_cnn, low_cnn, high_cnn, "cnn_nmi.png")
+plot_scores(
+    nmi_cnn_scores, mean_nmi_cnn, low_cnn, high_cnn, "./mnist_results/cnn/cnn_nmi.png"
+)
 
 # Silhouette Scores
 mean_silhouette_raw = float(np.mean(silhouette_raw_scores))
@@ -163,7 +166,7 @@ plot_scores(
     mean_silhouette_raw,
     low_silhouette_raw,
     high_silhouette_raw,
-    "raw_silhouette.png",
+    "./mnist_results/raw/raw_silhouette.png",
 )
 mean_silhouette_cnn = float(np.mean(silhouette_cnn_scores))
 plot_scores(
@@ -171,7 +174,7 @@ plot_scores(
     mean_silhouette_cnn,
     low_silhouette_cnn,
     high_silhouette_cnn,
-    "cnn_silhouette.png",
+    "./mnist_results/cnn/cnn_silhouette.png",
 )
 
 # Davies-Bouldin Scores
@@ -181,7 +184,7 @@ plot_scores(
     mean_davies_bouldin_raw,
     low_davies_bouldin_raw,
     high_davies_bouldin_raw,
-    "raw_davies_bouldin.png",
+    "./mnist_results/raw/raw_davies_bouldin.png",
 )
 mean_davies_bouldin_cnn = float(np.mean(davies_bouldin_cnn_scores))
 plot_scores(
@@ -189,7 +192,7 @@ plot_scores(
     mean_davies_bouldin_cnn,
     low_davies_bouldin_cnn,
     high_davies_bouldin_cnn,
-    "cnn_davies_bouldin.png",
+    "./mnist_results/cnn/cnn_davies_bouldin.png",
 )
 
 # Calinski-Harabasz Scores
@@ -199,7 +202,7 @@ plot_scores(
     mean_calinski_harabasz_raw,
     low_calinski_harabasz_raw,
     high_calinski_harabasz_raw,
-    "raw_calinski_harabasz.png",
+    "./mnist_results/raw/raw_calinski_harabasz.png",
 )
 mean_calinski_harabasz_cnn = float(np.mean(calinski_harabasz_cnn_scores))
 plot_scores(
@@ -207,7 +210,7 @@ plot_scores(
     mean_calinski_harabasz_cnn,
     low_calinski_harabasz_cnn,
     high_calinski_harabasz_cnn,
-    "cnn_calinski_harabasz.png",
+    "./mnist_results/cnn/cnn_calinski_harabasz.png",
 )
 
 # Adjusted Rand Index Scores
@@ -217,7 +220,7 @@ plot_scores(
     mean_adjusted_rand_raw,
     low_adjusted_rand_raw,
     high_adjusted_rand_raw,
-    "raw_adjusted_rand.png",
+    "./mnist_results/raw/raw_adjusted_rand.png",
 )
 mean_adjusted_rand_cnn = float(np.mean(adjusted_rand_cnn_scores))
 plot_scores(
@@ -225,5 +228,5 @@ plot_scores(
     mean_adjusted_rand_cnn,
     low_adjusted_rand_cnn,
     high_adjusted_rand_cnn,
-    "cnn_adjusted_rand.png",
+    "./mnist_results/cnn/cnn_adjusted_rand.png",
 )
