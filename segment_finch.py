@@ -82,6 +82,7 @@ def main():
     )
     plt.savefig("sam.png")
 
+    # display clustered masks at maximum granularity
     display_cluster_masks(masks, clusters, -1)
 
 
